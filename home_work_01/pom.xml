@@ -5,15 +5,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ru.otus</groupId>
-    <artifactId>dz01.1-maven</artifactId>
+    <artifactId>hw01</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <com.google.guava.version>24.0-jre</com.google.guava.version>
+        <com.google.guava.version>23.0</com.google.guava.version>
         <plugin.assembly.maven.version>3.1.0</plugin.assembly.maven.version>
+        <plugin.proguard.maven.version>2.0.14</plugin.proguard.maven.version>
+        <proguard.version>5.3.3</proguard.version>
 
     </properties>
 
@@ -53,6 +55,50 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>com.github.wvengen</groupId>
+                <artifactId>proguard-maven-plugin</artifactId>
+                <version>${plugin.proguard.maven.version}</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>proguard</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <obfuscate>true</obfuscate>
+                    <injar>${project.name}.jar</injar>
+                    <outjar>${project.name}-obfuscation.jar</outjar>
+                    <outputDirectory>${project.build.directory}</outputDirectory>
+                    <proguardInclude>${basedir}/proguard.pro</proguardInclude>
+                    <libs>
+                        <lib>${java.home}/lib/rt.jar</lib>
+                        <lib>${java.home}/lib/jce.jar</lib>
+                        <lib>${java.home}/lib/jsse.jar</lib>
+                    </libs>
+                    <options>
+                        <option>-keepattributes *Annotation*</option>
+                        <option>-keepattributes Signature</option>
+                        <option>-keepattributes InnerClasses,EnclosingMethod</option>
+                        <option>-keepclasseswithmembers public class * { public static void main(java.lang.String[]); }</option>
+                    </options>
+                    <addMavenDescriptor>false</addMavenDescriptor>
+                    <includeDependency>false</includeDependency>
+                    <proguardVersion>${proguard.version}</proguardVersion>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>net.sf.proguard</groupId>
+                        <artifactId>proguard-base</artifactId>
+                        <version>5.3.3</version>
+                        <scope>runtime</scope>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
         </plugins>
     </build>
 
